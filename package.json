@@ -1,0 +1,26 @@
+{
+  "name": "employee-manager-project",
+  "version": "1.0.0",
+  "description": "The Employee Manager Project",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/morrisbianco/employee-manager-project.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/morrisbianco/employee-manager-project/issues"
+  },
+  "homepage": "https://github.com/morrisbianco/employee-manager-project#readme",
+  "dependencies": {
+    "asciiart-logo": "^0.2.6",
+    "console.table": "^0.10.0",
+    "inquirer": "^8.1.1",
+    "mysql": "^2.18.1"
+  }
+}
