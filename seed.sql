@@ -1,18 +1,18 @@
 use employeeDB;
 
 INSERT INTO employees (first_name, last_name, role_id, manager_id)
-VALUES ('Rachel', 'Wright', 1, 4576),
-('Tom', 'Wells', 2, 23),
-('Irene', 'Smith', 3, 2497),
-('Morris', 'Bianco', 4, 34),
-('Nathaniel', 'Wilson', 5, 8734),
-('Sofia', 'Rodriguez', 6, 347),
-('Roy', 'Halladay', 7, 9374),
-('Michael', 'Buckner', 8, 8247),
-('Claire', 'Buckner', 8, 234),
-('Kyle', 'Phillips', 9, 2389),
-('Greg', 'Fowler', 10, 23),
-('Susan', 'Lewis', 11, 234);
+VALUES ('Rachel', 'Wright', 1, 4),
+('Tom', 'Wells', 1, 4),
+('Irene', 'Smith', 1, 4),
+('Morris', 'Bianco', 3, 3),
+('Nathaniel', 'Wilson', 3, 3),
+('Sofia', 'Rodriguez', 3, 3),
+('Roy', 'Halladay', 4, 2),
+('Michael', 'Buckner', 4, 2),
+('Claire', 'Buckner', 4, 2),
+('Kyle', 'Phillips', 2, 1),
+('Greg', 'Fowler', 2, 1),
+('Susan', 'Lewis', 2, 1);
 
 INSERT INTO department (name)
 VALUES ('Accounting'),

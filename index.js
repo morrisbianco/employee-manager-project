@@ -15,6 +15,26 @@ const connection = mysql.createConnection({
   database: 'employeeDB',
 });
 
+const updateRole = (data) => {
+  connection.query(
+    'UPDATE products SET ? WHERE ?', data,
+    (err, res) => {
+      if (err) throw err;
+      console.log(`${res.affectedRows} role updated!\n`);
+    }
+  );
+};
+
+const updateManager = (data) => {
+  connection.query(
+    'UPDATE products SET ? WHERE ?', data,
+    (err, res) => {
+      if (err) throw err;
+      console.log(`${res.affectedRows} manager updated!\n`);
+    }
+  );
+};
+
 const viewEmployees = () => {
   connection.query('SELECT * FROM employees', (err, res) => {
       if (err) throw err;
@@ -41,30 +61,30 @@ const viewRoles = () => {
 
 const createEmployee = (data) => {
   console.log(data);
-  const query = connection.query('INSERT INTO employees SET ?',
+  connection.query('INSERT INTO employees SET ?',
     data, (err, res) => {
       if (err) throw err;
-      console.log(`${res.affectedRows} product inserted!\n`);
+      console.log(`${res.affectedRows} Employee added!\n`);
       connection.end();
     }
   );
 };
 
 const createDepartment = (data) => {
-  const query = connection.query('INSERT INTO department SET ?',
+  connection.query('INSERT INTO department SET ?',
     data, (err, res) => {
       if (err) throw err;
-      console.log(`${res.affectedRows} product inserted!\n`);
+      console.log(`${res.affectedRows} Deparment created!\n`);
       connection.end();
     }
   );
 };
 
 const createRole = (data) => {
-  const query = connection.query('INSERT INTO role SET ?',
+  connection.query('INSERT INTO role SET ?',
     data, (err, res) => {
       if (err) throw err;
-      console.log(`${res.affectedRows} product inserted!\n`);
+      console.log(`${res.affectedRows} Role created!\n`);
       connection.end();
     }
   );
@@ -229,6 +249,40 @@ const addDepartment = () => {
     .then((response) => {
       createDepartment(response);
     })
+};
+
+const updateEmployeeRole = () => {
+  inquirer.prompt([
+    {
+      type: 'input',
+      message: "What should the employee's title be?",
+      name: 'title'
+    },
+    {
+      type: 'input',
+      message: "What should the employee's salary be?",
+      name: 'salary'
+    },
+    {
+      type: 'input',
+      message: "What is the new role's department id?",
+      name: 'department_id'
+    }
+  ]).then((response) => {
+    updateRole(response);
+  })
+};
+
+const updateEmployeeManager = () => {
+  inquirer.prompt([
+    {
+      type: 'input',
+      message: "What is the employee's new manager's id?",
+      name: 'manager_id'
+    },
+  ]).then((response) => {
+    updateManager(response);
+  })
 };
 
 connection.connect((err) => {
