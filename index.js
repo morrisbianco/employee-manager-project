@@ -15,6 +15,30 @@ const connection = mysql.createConnection({
   database: 'employeeDB',
 });
 
+const viewEmployees = () => {
+  connection.query('SELECT * FROM employees', (err, res) => {
+      if (err) throw err;
+      console.table(res);
+      connection.end();
+  });
+};
+
+const viewDepartment = () => {
+  connection.query('SELECT * FROM department', (err, res) => {
+      if (err) throw err;
+      console.table(res);
+      connection.end();
+  });
+};
+
+const viewRoles = () => {
+  connection.query('SELECT * FROM role', (err, res) => {
+      if (err) throw err;
+      console.table(res);
+      connection.end();
+  });
+};
+
 const createEmployee = (data) => {
   console.log(data);
   const query = connection.query('INSERT INTO employees SET ?',
@@ -112,7 +136,7 @@ const start = () => {
   }).then(({ questions }) => {
     console.log(questions);
     if (questions === 'VIEW_EMPLOYEES') {
-      viewAll();
+      viewEmployees();
     } else if (questions === 'VIEW_EMPLOYEES_BY_DEPARTMENT') {
       viewEmpDepartment();
     } else if (questions === 'VIEW_EMPLOYEES_BY_MANAGER') {
