@@ -15,38 +15,35 @@ const connection = mysql.createConnection({
   database: 'employeeDB',
 });
 
-const employeeList = [];
-const departmentList = [];
-const roleList = [];
-
-const createEmployee = () => {
+const createEmployee = (data) => {
+  console.log(data);
   const query = connection.query('INSERT INTO employees SET ?',
-    employeeList, (err, res) => {
-        if (err) throw err;
-        console.log(`${res.affectedRows} product inserted!\n`);
-        connection.end();
+    data, (err, res) => {
+      if (err) throw err;
+      console.log(`${res.affectedRows} product inserted!\n`);
+      connection.end();
     }
-);
+  );
 };
 
-const createDepartment = () => {
-  connection.query('INSERT INTO department SET ?',
-    (departmentList), (err, res) => {
-        if (err) throw err;
-        console.log(`${res.affectedRows} product inserted!\n`);
-        connection.end();
+const createDepartment = (data) => {
+  const query = connection.query('INSERT INTO department SET ?',
+    data, (err, res) => {
+      if (err) throw err;
+      console.log(`${res.affectedRows} product inserted!\n`);
+      connection.end();
     }
-);
+  );
 };
 
-const createRole = () => {
-  connection.query('INSERT INTO role SET ?',
-    roleList, (err, res) => {
-        if (err) throw err;
-        console.log(`${res.affectedRows} product inserted!\n`);
-        connection.end();
+const createRole = (data) => {
+  const query = connection.query('INSERT INTO role SET ?',
+    data, (err, res) => {
+      if (err) throw err;
+      console.log(`${res.affectedRows} product inserted!\n`);
+      connection.end();
     }
-);
+  );
 };
 
 const start = () => {
@@ -112,33 +109,33 @@ const start = () => {
         value: "QUIT"
       }
     ]
-  }).then((response) => {
-    console.log(response);
-    if (response === 'VIEW_EMPLOYEES') {
+  }).then(({ questions }) => {
+    console.log(questions);
+    if (questions === 'VIEW_EMPLOYEES') {
       viewAll();
-    } else if (response === 'VIEW_EMPLOYEES_BY_DEPARTMENT') {
+    } else if (questions === 'VIEW_EMPLOYEES_BY_DEPARTMENT') {
       viewEmpDepartment();
-    } else if (response === 'VIEW_EMPLOYEES_BY_MANAGER') {
+    } else if (questions === 'VIEW_EMPLOYEES_BY_MANAGER') {
       viewEmpManager();
-    } else if (response === 'ADD_EMPLOYEE') {
+    } else if (questions === 'ADD_EMPLOYEE') {
       addEmployee();
-    } else if (response === 'REMOVE_EMPLOYEE') {
+    } else if (questions === 'REMOVE_EMPLOYEE') {
       removeEmployee();
-    } else if (response === 'UPDATE_EMPLOYEE_ROLE') {
+    } else if (questions === 'UPDATE_EMPLOYEE_ROLE') {
       updateEmployeeRole();
-    } else if (response === 'UPDATE_EMPLOYEE_MANAGER') {
+    } else if (questions === 'UPDATE_EMPLOYEE_MANAGER') {
       updateEmployeeManager();
-    } else if (response === 'VIEW_ROLES') {
+    } else if (questions === 'VIEW_ROLES') {
       viewRoles();
-    } else if (response === 'ADD_ROLE') {
+    } else if (questions === 'ADD_ROLE') {
       addRole();
-    } else if (response === 'REMOVE_ROLE') {
+    } else if (questions === 'REMOVE_ROLE') {
       removeRole();
-    } else if (response === 'VIEW_DEPARTMENTS') {
+    } else if (questions === 'VIEW_DEPARTMENTS') {
       viewDepartment();
-    } else if (response === 'ADD_DEPARTMENT') {
+    } else if (questions === 'ADD_DEPARTMENT') {
       addDepartment();
-    } else if (response === 'REMOVE_DEPARTMENT') {
+    } else if (questions === 'REMOVE_DEPARTMENT') {
       removeDepartment();
     } else {
       process.exit();
@@ -148,11 +145,6 @@ const start = () => {
 
 const addEmployee = () => {
   inquirer.prompt([
-    {
-      type: 'input',
-      message: "What is the employee's id?",
-      name: 'id'
-    },
     {
       type: 'input',
       message: "What is the employee's first name?",
@@ -175,18 +167,12 @@ const addEmployee = () => {
     }
   ])
     .then((response) => {
-      employeeList.push(response);
-      createEmployee();
+      createEmployee(response);
     })
 };
 
 const addRole = () => {
   inquirer.prompt([
-    {
-      type: 'input',
-      message: "What is the role's id?",
-      name: 'id'
-    },
     {
       type: 'input',
       message: "What is the role's title?",
@@ -204,8 +190,7 @@ const addRole = () => {
     },
   ])
     .then((response) => {
-      roleList.push(response);
-      createRole();
+      createRole(response);
     })
 };
 
@@ -213,26 +198,17 @@ const addDepartment = () => {
   inquirer.prompt([
     {
       type: 'input',
-      message: "What is the department's id?",
-      name: 'id'
-    },
-    {
-      type: 'input',
       message: "What is the department's name?",
       name: 'name'
     },
   ])
     .then((response) => {
-      departmentList.push(response);
-      createDepartment();
+      createDepartment(response);
     })
 };
 
 connection.connect((err) => {
   if (err) throw err;
   console.log(`connected as id ${connection.threadId}\n`);
-  // start();
-  // createDepartment();
-  // createRole();
-  createEmployee();
+  start();
 });
