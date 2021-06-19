@@ -1,3 +1,4 @@
+/* This sql fills out the databases with employees, roles, and departments */
 use employeeDB;
 
 INSERT INTO employees (first_name, last_name, role_id, manager_id)

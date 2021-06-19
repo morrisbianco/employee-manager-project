@@ -1,3 +1,4 @@
+/* This sql file creates the employee database */
 DROP DATABASE IF EXISTS employeeDB;
 
 CREATE DATABASE employeeDB;

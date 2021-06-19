@@ -1,11 +1,10 @@
-const Choices = require("inquirer/lib/objects/choices");
-
-const questions = 
-  {
-    type: 'list',
-    message: 'Welcome to the Employee Manager, what would you like to do?',
-    name: 'questions',
-    choices: [
+// This script file provides the questions for the program menu
+const questions =
+{
+  type: 'list',
+  message: 'Welcome to the Employee Manager, what would you like to do?',
+  name: 'questions',
+  choices: [
     {
       name: "View All Employees",
       value: "VIEW_EMPLOYEES"
@@ -65,6 +64,7 @@ const questions =
   ]
 }
 
-  module.exports = {
-      questions,
-  }
+// This code exports the questions
+module.exports = {
+  questions,
+}

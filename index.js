@@ -1,3 +1,4 @@
+// Requires for all of my npms and files
 const mysql = require('mysql');
 const inquirer = require('inquirer');
 const consoleTable = require('console.table');
@@ -5,6 +6,7 @@ const logo = require('asciiart-logo');
 const questions = require('./questions');
 const util = require('util');
 
+// Establishes my host, port, username, password, and database
 const connection = mysql.createConnection({
   host: 'localhost',
 
@@ -16,12 +18,15 @@ const connection = mysql.createConnection({
   database: 'employeeDB',
 });
 
+// Allows the Async command to work
 connection.query = util.promisify(connection.query);
 
+// Creates my Employee Manager Logo
 const logoText = logo({ name: "Employee// Manager//" }).render();
 
 console.log(logoText);
 
+// This function updates the role by inserting the question response into role_id at the employee's id
 const updateRole = (data) => {
   connection.query(
     'UPDATE employees SET ? WHERE ?', [
@@ -39,6 +44,7 @@ const updateRole = (data) => {
   );
 };
 
+// This function updates the manager by inserting the question response into manager_id at the employee's id
 const updateManager = (data) => {
   connection.query(
     'UPDATE employees SET ? WHERE ?', [
@@ -56,6 +62,7 @@ const updateManager = (data) => {
   );
 };
 
+// This function views the employees of certain managers by pulling the full names of the employees and viewing them by the manager_id
 const viewEmployeeByManager = (data) => {
   connection.query('SELECT first_name, last_name FROM employees WHERE manager_id = ?', data.id,
    (err, res) => {
@@ -65,6 +72,7 @@ const viewEmployeeByManager = (data) => {
   });
 };
 
+// This function views the employees of certain departments by pulling the full names of the employees and viewing them by their department
 const viewEmpDepartment = () => {
   connection.query(`SELECT name, first_name, last_name FROM department 
   INNER JOIN role ON department.id = role.department_id 
@@ -76,6 +84,7 @@ const viewEmpDepartment = () => {
   });
 };
 
+// This function views the all employees by inner joining their full names, role titles, salaries, and department name of the employees
 const viewEmployees = () => {
   connection.query(`SELECT first_name, last_name, manager_id, title, salary, name 
   FROM employees INNER JOIN role ON employees.role_id = role.id 
@@ -86,6 +95,7 @@ const viewEmployees = () => {
   });
 };
 
+// This function views all info of the department table
 const viewDepartment = () => {
   connection.query('SELECT * FROM department', (err, res) => {
     if (err) throw err;
@@ -94,6 +104,7 @@ const viewDepartment = () => {
   });
 };
 
+// This function views all info of the role table
 const viewRoles = () => {
   connection.query('SELECT * FROM role', (err, res) => {
     if (err) throw err;
@@ -102,6 +113,7 @@ const viewRoles = () => {
   });
 };
 
+// This function creates an employee from the data provided by the questions
 const createEmployee = (data) => {
   console.log(data);
   connection.query('INSERT INTO employees SET ?',
@@ -113,6 +125,7 @@ const createEmployee = (data) => {
   );
 };
 
+// This function creates a department from the data provided by the questions
 const createDepartment = (data) => {
   connection.query('INSERT INTO department SET ?',
     data, (err, res) => {
@@ -123,6 +136,7 @@ const createDepartment = (data) => {
   );
 };
 
+// This function creates a role from the data provided by the questions
 const createRole = (data) => {
   connection.query('INSERT INTO role SET ?',
     data, (err, res) => {
@@ -133,6 +147,7 @@ const createRole = (data) => {
   );
 };
 
+// This function deletes a department
 const deleteDepartment = (data) => {
   connection.query(
     'DELETE FROM department WHERE ?', data,
@@ -144,6 +159,7 @@ const deleteDepartment = (data) => {
   );
 };
 
+// This function deletes an employee
 const deleteEmployee = (data) => {
   connection.query(
     'DELETE FROM employees WHERE ?', data,
@@ -155,6 +171,7 @@ const deleteEmployee = (data) => {
   );
 };
 
+// This function deletes a role
 const deleteRole = (data) => {
   connection.query(
     'DELETE FROM role WHERE ?', data,
@@ -166,70 +183,10 @@ const deleteRole = (data) => {
   );
 };
 
+// This function starts the program and calls the appropiate functions by the response of the user
 const start = () => {
-  inquirer.prompt({
-    type: 'list',
-    message: 'Welcome to the Employee Manager, what would you like to do?',
-    name: 'questions',
-    choices: [
-      {
-        name: "View All Employees",
-        value: "VIEW_EMPLOYEES"
-      },
-      {
-        name: "View All Employees By Department",
-        value: "VIEW_EMPLOYEES_BY_DEPARTMENT"
-      },
-      {
-        name: "View All Employees By Manager",
-        value: "VIEW_EMPLOYEES_BY_MANAGER"
-      },
-      {
-        name: "Add Employee",
-        value: "ADD_EMPLOYEE"
-      },
-      {
-        name: "Remove Employee",
-        value: "REMOVE_EMPLOYEE"
-      },
-      {
-        name: "Update Employee Role",
-        value: "UPDATE_EMPLOYEE_ROLE"
-      },
-      {
-        name: "Update Employee Manager",
-        value: "UPDATE_EMPLOYEE_MANAGER"
-      },
-      {
-        name: "View All Roles",
-        value: "VIEW_ROLES"
-      },
-      {
-        name: "Add Role",
-        value: "ADD_ROLE"
-      },
-      {
-        name: "Remove Role",
-        value: "REMOVE_ROLE"
-      },
-      {
-        name: "View All Departments",
-        value: "VIEW_DEPARTMENTS"
-      },
-      {
-        name: "Add Department",
-        value: "ADD_DEPARTMENT"
-      },
-      {
-        name: "Remove Department",
-        value: "REMOVE_DEPARTMENT"
-      },
-      {
-        name: "Quit",
-        value: "QUIT"
-      }
-    ]
-  }).then(({ questions }) => {
+  inquirer.prompt(questions.questions)
+  .then(({ questions }) => {
     console.log(questions);
     if (questions === 'VIEW_EMPLOYEES') {
       viewEmployees();
@@ -263,6 +220,7 @@ const start = () => {
   })
 };
 
+// This function provides the data for adding an employee
 const addEmployee = async () => {
   const query = await connection.query(
     'SELECT * FROM role');
@@ -299,6 +257,7 @@ const addEmployee = async () => {
     })
 };
 
+// This function provides the data for adding a role
 const addRole = () => {
   inquirer.prompt([
     {
@@ -322,6 +281,7 @@ const addRole = () => {
     })
 };
 
+// This function provides the data for adding a department
 const addDepartment = () => {
   inquirer.prompt([
     {
@@ -335,6 +295,7 @@ const addDepartment = () => {
     })
 };
 
+// This function provides the data for updating an employee's role
 const updateEmployeeRole = async () => {
   const query = await connection.query(
     'SELECT * FROM employees');
@@ -356,6 +317,7 @@ const updateEmployeeRole = async () => {
   })
 };
 
+// This function provides the data for updating an employee's manager
 const updateEmployeeManager = async () => {
   const query = await connection.query(
     'SELECT * FROM employees');
@@ -381,6 +343,7 @@ const updateEmployeeManager = async () => {
   })
 };
 
+// This function provides the data for deleting a department
 const removeDepartment = async () => {
   const query = await connection.query(
     'SELECT * FROM department');
@@ -397,6 +360,7 @@ const removeDepartment = async () => {
   })
 };
 
+// This function provides the data for deleting a role
 const removeRole = async () => {
   const query = await connection.query(
     'SELECT * FROM role');
@@ -413,6 +377,7 @@ const removeRole = async () => {
   })
 };
 
+// This function provides the data for deleting an employee
 const removeEmployee = async () => {
   const query = await connection.query(
     'SELECT * FROM employees');
@@ -429,6 +394,7 @@ const removeEmployee = async () => {
   })
 };
 
+// This function provides the data for viewing employees by their manager
 const viewEmpManager = async () => {
   const query = await connection.query(
     'SELECT * FROM employees');
@@ -445,6 +411,7 @@ const viewEmpManager = async () => {
   })
 }
 
+// this function connects the database and calls the start of the program 
 connection.connect((err) => {
   if (err) throw err;
   start();
