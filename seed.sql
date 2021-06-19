@@ -1,7 +1,7 @@
 use employeeDB;
 
 INSERT INTO employees (first_name, last_name, role_id, manager_id)
-VALUES ('Rachel', 'Wright', 1, null),
+VALUES ('Rachel', 'Wright', 1, 0),
 ('Tom', 'Wells', 2, 1),
 ('Irene', 'Smith', 3, 2),
 ('Roy', 'Halladay', 4, 3),

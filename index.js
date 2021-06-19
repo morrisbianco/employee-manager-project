@@ -39,18 +39,31 @@ const updateRole = (data) => {
   );
 };
 
-// const updateManager = (data) => {
-//   console.log(data.first_name);
-//   console.log(data.last_name);
-//   connection.query(
-//     'UPDATE employees SET ? WHERE ? and ?', (`first_name: ${data.first_name}`,`last_name: ${data.last_name}`, data.manager_id),
-//     (err, res) => {
-//       if (err) throw err;
-//       console.log(`${res.affectedRows} manager updated!\n`);
-//       start();
-//     }
-//   );
-// };
+const updateManager = (data) => {
+  connection.query(
+    'UPDATE employees SET ? WHERE ?', [
+      {
+        manager_id: data.manager_id
+      },
+      {
+        id: data.employee
+      }],
+    (err, res) => {
+      if (err) throw err;
+      console.log(`${res.affectedRows} manager updated!\n`);
+      start();
+    }
+  );
+};
+
+const viewEmployeeByManager = (data) => {
+  connection.query('SELECT first_name, last_name FROM employees WHERE manager_id = ?', data.id,
+   (err, res) => {
+    if (err) throw err;
+    console.table(res);
+    start();
+  });
+};
 
 const viewEmpDepartment = () => {
   connection.query(`SELECT name, first_name, last_name FROM department 
@@ -61,7 +74,7 @@ const viewEmpDepartment = () => {
     console.table(res);
     start();
   });
-}
+};
 
 const viewEmployees = () => {
   connection.query(`SELECT first_name, last_name, manager_id, title, salary, name 
@@ -343,22 +356,25 @@ const updateEmployeeRole = async () => {
   })
 };
 
-const updateEmployeeManager = () => {
+const updateEmployeeManager = async () => {
+  const query = await connection.query(
+    'SELECT * FROM employees');
+  const empChoices = query.map(({ first_name, last_name, id }) => ({ name: `${first_name} ${last_name}`, value: id }));
+  const query2 = await connection.query(
+    'SELECT * FROM employees');
+  const managerChoices = query2.map(({ first_name, last_name, id }) => ({ name: `${first_name} ${last_name}`, value: id }));
   inquirer.prompt([
     {
-      type: 'input',
-      message: "What is the employee's new manager's id?",
-      name: 'manager_id'
+      type: 'list',
+      message: "Which employee would you like to update?",
+      name: 'employee',
+      choices: empChoices
     },
     {
-      type: 'input',
-      message: "What is the current manager's first name?",
-      name: 'first_name'
-    },
-    {
-      type: 'input',
-      message: "What is the current manager's last name?",
-      name: 'last_name'
+      type: 'list',
+      message: "Who should be the new manager?",
+      name: 'manager_id',
+      choices: managerChoices
     }
   ]).then((response) => {
     updateManager(response);
@@ -412,6 +428,22 @@ const removeEmployee = async () => {
     deleteEmployee(response);
   })
 };
+
+const viewEmpManager = async () => {
+  const query = await connection.query(
+    'SELECT * FROM employees');
+  const managerChoices = query.map(({ first_name, last_name, id }) => ({ name: `${first_name} ${last_name}`, value: id }));
+  inquirer.prompt([
+    {
+      type: 'list',
+      message: "Which manager's employees would you like to see?",
+      name: 'id',
+      choices: managerChoices
+    }
+  ]).then((response) => {
+    viewEmployeeByManager(response);
+  })
+}
 
 connection.connect((err) => {
   if (err) throw err;
