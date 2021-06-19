@@ -1,7 +1,7 @@
 const mysql = require('mysql');
 const inquirer = require('inquirer');
 const consoleTable = require('console.table');
-const asciiart = require('asciiart-logo');
+const logo = require('asciiart-logo');
 const questions = require('./questions');
 const util = require('util');
 
@@ -18,10 +18,19 @@ const connection = mysql.createConnection({
 
 connection.query = util.promisify(connection.query);
 
+const logoText = logo({ name: "Employee// Manager//" }).render();
+
+console.log(logoText);
+
 const updateRole = (data) => {
-  console.log(data);
   connection.query(
-    'UPDATE role SET ? WHERE ?', [data.title, data.salary, data.department_id],
+    'UPDATE employees SET ? WHERE ?', [
+    {
+      role_id: data.role_id
+    },
+    {
+      id: data.employee
+    }],
     (err, res) => {
       if (err) throw err;
       console.log(`${res.affectedRows} role updated!\n`);
@@ -42,6 +51,17 @@ const updateRole = (data) => {
 //     }
 //   );
 // };
+
+const viewEmpDepartment = () => {
+  connection.query(`SELECT name, first_name, last_name FROM department 
+  INNER JOIN role ON department.id = role.department_id 
+  INNER JOIN employees ON role.id = employees.role_id`, 
+   (err, res) => {
+    if (err) throw err;
+    console.table(res);
+    start();
+  });
+}
 
 const viewEmployees = () => {
   connection.query(`SELECT first_name, last_name, manager_id, title, salary, name 
@@ -74,7 +94,7 @@ const createEmployee = (data) => {
   connection.query('INSERT INTO employees SET ?',
     data, (err, res) => {
       if (err) throw err;
-      console.log(`${res.affectedRows} Employee added!\n`);
+      console.log(`${res.affectedRows} employee added!\n`);
       start();
     }
   );
@@ -84,7 +104,7 @@ const createDepartment = (data) => {
   connection.query('INSERT INTO department SET ?',
     data, (err, res) => {
       if (err) throw err;
-      console.log(`${res.affectedRows} Deparment created!\n`);
+      console.log(`${res.affectedRows} deparment created!\n`);
       start();
     }
   );
@@ -94,7 +114,40 @@ const createRole = (data) => {
   connection.query('INSERT INTO role SET ?',
     data, (err, res) => {
       if (err) throw err;
-      console.log(`${res.affectedRows} Role created!\n`);
+      console.log(`${res.affectedRows} role created!\n`);
+      start();
+    }
+  );
+};
+
+const deleteDepartment = (data) => {
+  connection.query(
+    'DELETE FROM department WHERE ?', data,
+    (err, res) => {
+      if (err) throw err;
+      console.log(`${res.affectedRows} department deleted!\n`);
+      start();
+    }
+  );
+};
+
+const deleteEmployee = (data) => {
+  connection.query(
+    'DELETE FROM employees WHERE ?', data,
+    (err, res) => {
+      if (err) throw err;
+      console.log(`${res.affectedRows} employee deleted!\n`);
+      start();
+    }
+  );
+};
+
+const deleteRole = (data) => {
+  connection.query(
+    'DELETE FROM role WHERE ?', data,
+    (err, res) => {
+      if (err) throw err;
+      console.log(`${res.affectedRows} role deleted!\n`);
       start();
     }
   );
@@ -204,7 +257,6 @@ const addEmployee = async () => {
   const query2 = await connection.query(
     'SELECT * FROM employees');
   const managerChoices = query2.map(({ first_name, last_name, id }) => ({ name: `${first_name} ${last_name}`, value: id }));
-  console.log(managerChoices);
   inquirer.prompt([
     {
       type: 'input',
@@ -283,18 +335,8 @@ const updateEmployeeRole = async () => {
     },
     {
       type: 'input',
-      message: "What should the employee's title be?",
-      name: 'title'
-    },
-    {
-      type: 'input',
-      message: "What should the employee's salary be?",
-      name: 'salary'
-    },
-    {
-      type: 'input',
-      message: "What is the new role's department id?",
-      name: 'department_id'
+      message: "What is the new role's id?",
+      name: 'role_id'
     }
   ]).then((response) => {
     updateRole(response);
@@ -323,8 +365,55 @@ const updateEmployeeManager = () => {
   })
 };
 
+const removeDepartment = async () => {
+  const query = await connection.query(
+    'SELECT * FROM department');
+  const deptChoices = query.map(({ name, id }) => ({ name: name, value: id }));
+  inquirer.prompt([
+    {
+      type: 'list',
+      message: "Which department would you like to delete?",
+      name: 'id',
+      choices: deptChoices
+    }
+  ]).then((response) => {
+    deleteDepartment(response);
+  })
+};
+
+const removeRole = async () => {
+  const query = await connection.query(
+    'SELECT * FROM role');
+  const roleChoices = query.map(({ title, id }) => ({ name: title, value: id }));
+  inquirer.prompt([
+    {
+      type: 'list',
+      message: "Which role would you like to delete?",
+      name: 'id',
+      choices: roleChoices
+    }
+  ]).then((response) => {
+    deleteRole(response);
+  })
+};
+
+const removeEmployee = async () => {
+  const query = await connection.query(
+    'SELECT * FROM employees');
+  const empChoices = query.map(({ first_name, last_name, id }) => ({ name: `${first_name} ${last_name}`, value: id }));
+  inquirer.prompt([
+    {
+      type: 'list',
+      message: "Which employee would you like to delete?",
+      name: 'id',
+      choices: empChoices
+    }
+  ]).then((response) => {
+    deleteEmployee(response);
+  })
+};
+
 connection.connect((err) => {
   if (err) throw err;
-  console.log(`connected as id ${connection.threadId}\n`);
   start();
 });
